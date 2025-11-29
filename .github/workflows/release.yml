@@ -3,7 +3,7 @@ name: Create Release
 on:
   push:
     tags:
-      - 'v*'  # This will trigger the workflow on version tags like v1.0.0
+      - 'v*'
 
 jobs:
   build:
@@ -15,36 +15,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v1
         with:
-          node-version: "20"
-          cache: "npm"
+          bun-version: 1.1.20
 
       - name: Install dependencies
-        run: npm ci
+        run: bun install
 
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: aarch64-apple-darwin, x86_64-apple-darwin
+      - name: Build application (Electron)
+        run: bun run build
 
-      - name: Cache Rust dependencies
-        uses: Swatinem/rust-cache@v2
-        with:
-          shared-key: "tauri-build"
-
-      - name: Build application
-        run: npm run tauri build -- --target universal-apple-darwin
-
-      - name: Get DMG path
+      - name: Locate dmg artifact
         id: dmg
         run: |
-          DMG_PATH=$(find src-tauri/target/universal-apple-darwin/release/bundle/dmg -name "*.dmg" -type f)
+          DMG_PATH=$(find release -name "*.dmg" -type f)
           echo "path=$DMG_PATH" >> $GITHUB_OUTPUT
 
           if [ -z "$DMG_PATH" ]; then
-            echo "No DMG file found in the expected directory"
+            echo "No DMG file found in release/"
             exit 1
           else
             echo "Found DMG at: $DMG_PATH"

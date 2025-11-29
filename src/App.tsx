@@ -1,8 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
-import { invoke } from '@tauri-apps/api/tauri';
-import { listen } from '@tauri-apps/api/event';
-import { getCurrent } from '@tauri-apps/api/window';
 import { Button, Checkbox, FormControlLabel, Typography, Container, Box, Paper } from '@mui/material';
 
 function App() {
@@ -11,13 +8,18 @@ function App() {
   const terminalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const unlisten = listen<string>('command-output', (event) => {
-      console.log('Received event:', event.payload); // Debugging print
-      setOutput((prevOutput) => [...prevOutput, event.payload]);
+    if (!window.electronAPI) {
+      console.warn('Electron API not available');
+      return undefined;
+    }
+
+    const unsubscribe = window.electronAPI.onCommandOutput((line) => {
+      console.log('Received event:', line);
+      setOutput((prevOutput) => [...prevOutput, line]);
     });
 
     return () => {
-      unlisten.then((fn) => fn());
+      unsubscribe();
     };
   }, []);
 
@@ -30,10 +32,13 @@ function App() {
   const handleClick = async (command: string, label?: string) => {
     try {
       setOutput((prevOutput) => [...prevOutput, `$ ${label || command}`]); // Add command to output
-      const currentWindow = await getCurrent();
-      await invoke(command, { window: currentWindow, debug });
+      if (!window.electronAPI) {
+        throw new Error('Electron API not available');
+      }
+      await window.electronAPI.invokeCommand(command, { debug });
     } catch (error) {
-      alert('Error: ' + error);
+      const message = error instanceof Error ? error.message : String(error);
+      alert('Error: ' + message);
     }
   };
 

@@ -1,6 +1,6 @@
 # Colima GUI
 
-Colima GUI is a desktop application for managing Colima, a tool that provides container runtimes on macOS with minimal setup. This application offers a graphical user interface for starting, stopping, restarting, and managing Colima instances.
+Colima GUI is a desktop application for managing Colima, a tool that provides container runtimes on macOS with minimal setup. The application now runs on [Electron](https://www.electronjs.org/) with a React renderer bundled by Vite and managed with [Bun](https://bun.sh/).
 
 ## Features
 
@@ -15,9 +15,8 @@ Colima GUI is a desktop application for managing Colima, a tool that provides co
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) (v16 or later)
-- [Rust](https://www.rust-lang.org/tools/install) (latest stable version)
-- [Tauri CLI](https://tauri.studio/en/docs/getting-started/intro#setting-up-your-environment)
+- [Bun](https://bun.sh/) v1.1 or later (installs Node-compatible dependencies and runs scripts)
+- macOS with Colima available on the `PATH`
 
 ### Steps
 
@@ -28,22 +27,22 @@ Colima GUI is a desktop application for managing Colima, a tool that provides co
    cd colima-gui
    ```
 
-2. Install dependencies:
+2. Install dependencies via Bun:
 
    ```bash
-   npm install
+   bun install
    ```
 
-3. Run the application in development mode:
+3. Run the application in development mode (starts Vite and Electron concurrently):
 
    ```bash
-   npm run tauri dev
+   bun run dev
    ```
 
-4. Build the application for production:
+4. Create a packaged desktop build:
 
    ```bash
-   npm run tauri build
+   bun run build
    ```
 
 ## Usage
@@ -60,5 +59,5 @@ If you have any questions or issues, please open an issue in this repository.
 
 ## Recommended IDE Setup
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+- [VS Code](https://code.visualstudio.com/) + [Bun VS Code Extension](https://marketplace.visualstudio.com/items?itemName=oven.bun-vscode) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint)
 

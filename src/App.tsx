@@ -56,7 +56,7 @@ function App() {
       <Typography variant="h4" gutterBottom>
         Colima GUI
       </Typography>
-      <Box display="flex" justifyContent="space-between">
+      <Box display="flex" justifyContent="space-between" columnGap={4}>
         <Box display="flex" flexDirection="column" gap={2}>
           <Button variant="contained" onClick={() => handleClick('start_colima', 'colima start')}>Start</Button>
           <Button variant="contained" onClick={() => handleClick('stop_colima', 'colima stop')}>Stop</Button>
@@ -77,7 +77,18 @@ function App() {
             label="Debug Mode"
           />
         </Box>
-        <Paper elevation={3} style={{ padding: '10px', backgroundColor: 'black', color: 'white', height: '400px', overflowY: 'auto', width: '100%' }} ref={terminalRef}>
+        <Paper
+          elevation={3}
+          style={{
+            padding: '10px',
+            backgroundColor: 'black',
+            color: 'white',
+            height: '400px',
+            overflowY: 'auto',
+            width: '100%',
+          }}
+          ref={terminalRef}
+        >
           {output.map((line, index) => (
             <div key={index}>{formatOutput(line)}</div>
           ))}

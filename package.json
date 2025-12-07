@@ -1,8 +1,8 @@
 {
   "name": "colima-gui",
   "private": true,
-  "version": "0.3.1",
-  "author": "Kyle Taylor <kyle.taylor@datadoghq.com>",
+  "version": "0.4.0",
+  "author": "Jeremy Hettenhouser <jhettenh@gmail.com>",
   "main": "dist-electron/main.js",
   "packageManager": "bun@1.1.20",
   "scripts": {
@@ -11,6 +11,7 @@
     "dev:electron": "bunx wait-on tcp:1420 && bunx nodemon --watch dist-electron --ext js,cjs --exec \"VITE_DEV_SERVER_URL=http://localhost:1420 bunx electron dist-electron/main.js\"",
     "watch:electron": "tsc -p tsconfig.electron.json --watch --preserveWatchOutput",
     "build:electron": "tsc -p tsconfig.electron.json",
+    "generate:icons": "bunx tsx scripts/generate-icons.ts",
     "clean": "bunx rimraf dist dist-electron release",
     "build": "bun run build:electron && bunx vite build && bunx electron-builder",
     "preview": "bunx vite preview"
@@ -20,7 +21,8 @@
     "@emotion/styled": "^11.11.5",
     "@mui/material": "^6.1.5",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "sharp": "^0.34.5"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",
@@ -51,5 +53,6 @@
       "category": "public.app-category.developer-tools",
       "icon": "resources/icons/512x512.png"
     }
-  }
+  },
+  "productName": "Colima GUI"
 }

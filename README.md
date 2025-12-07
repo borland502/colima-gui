@@ -6,10 +6,6 @@ Colima GUI is a desktop application for managing Colima, a tool that provides co
 
 - Start, stop, and restart Colima instances
 - Check the status of Colima
-- Delete and prune Colima instances
-- List Colima instances
-- Edit Colima configuration
-- View Colima version
 
 ## Installation
 

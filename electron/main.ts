@@ -54,13 +54,17 @@ const resolveIconPath = () => {
   return path.join(__dirname, '..', 'resources', 'icons', ICON_FILENAME);
 };
 
+const loadAppIcon = () => {
+  const icon = nativeImage.createFromPath(resolveIconPath());
+  return icon.isEmpty() ? undefined : icon;
+};
+
 const createWindow = () => {
-  const iconPath = resolveIconPath();
-  const iconImage = nativeImage.createFromPath(iconPath);
+  const iconImage = loadAppIcon();
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
-    icon: iconImage.isEmpty() ? undefined : iconImage,
+    icon: iconImage,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -249,6 +253,8 @@ app.setName(APP_NAME);
 app.name = APP_NAME;
 app.setAboutPanelOptions({
   applicationName: APP_NAME,
+  applicationVersion: app.getVersion(),
+  ...(process.platform === 'darwin' ? { icon: loadAppIcon() } : { iconPath: resolveIconPath() }),
 });
 
 const toMenuItems = (items: readonly MenuItemConstructorOptions[]): MenuItemConstructorOptions[] =>
@@ -315,11 +321,9 @@ const buildMenu = () => {
 };
 
 app.whenReady().then(() => {
-  if (process.platform === 'darwin') {
-    const icon = nativeImage.createFromPath(resolveIconPath());
-    if (!icon.isEmpty()) {
-      app.dock.setIcon(icon);
-    }
+  const dockIcon = loadAppIcon();
+  if (process.platform === 'darwin' && app.dock && dockIcon) {
+    app.dock.setIcon(dockIcon);
   }
   buildMenu();
   createWindow();

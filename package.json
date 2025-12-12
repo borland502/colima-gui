@@ -1,7 +1,7 @@
 {
   "name": "colima-gui",
   "private": true,
-  "version": "0.4.3",
+  "version": "0.4.4",
   "author": "Jeremy Hettenhouser <jhettenh@gmail.com>",
   "main": "dist-electron/main.js",
   "packageManager": "bun@1.3.4",
@@ -64,7 +64,11 @@
       "gatekeeperAssess": false,
       "target": [
         {
-          "target": "dir",
+          "target": "dmg",
+          "arch": ["arm64"]
+        },
+        {
+          "target": "zip",
           "arch": ["arm64"]
         }
       ]

@@ -9,27 +9,13 @@ Colima GUI is a desktop application for managing Colima, a tool that provides co
 
 ## Installation
 
-### Download Release (Recommended)
-
-Download the latest DMG or ZIP from the [Releases](https://github.com/borland502/colima-gui/releases) page.
-
-> **Note:** Since this app is not code-signed, macOS Gatekeeper may report it as "damaged". To fix this, run one of the following commands in Terminal after installing:
-
-```bash
-# If installed from DMG (before copying to Applications):
-xattr -cr "/Volumes/Colima GUI/Colima GUI.app"
-
-# If already in Applications:
-xattr -cr "/Applications/Colima GUI.app"
-```
-
-Alternatively, go to **System Settings → Privacy & Security** and click **"Open Anyway"** after attempting to open the app.
-
 ### Build from Source
+
+Releases contain source code only. You'll need to build the application locally.
 
 #### Prerequisites
 
-- [Bun](https://bun.sh/) v1.3 or later (installs Node-compatible dependencies and runs scripts)
+- [Bun](https://bun.sh/) v1.3 or later
 - macOS with Colima available on the `PATH`
 
 #### Steps
@@ -37,27 +23,34 @@ Alternatively, go to **System Settings → Privacy & Security** and click **"Ope
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/colima-gui.git
+   git clone https://github.com/borland502/colima-gui.git
    cd colima-gui
    ```
 
-2. Install dependencies via Bun:
+2. Install dependencies:
 
    ```bash
    bun install
    ```
 
-3. Run the application in development mode (starts Vite and Electron concurrently):
-
-   ```bash
-   bun run dev
-   ```
-
-4. Create a packaged desktop build:
+3. Build the application (creates DMG and ZIP in `release/` directory):
 
    ```bash
    bun run build
    ```
+
+4. Install the app:
+   - Open the DMG from `release/` and drag to Applications, or
+   - Extract the ZIP and move the app to Applications
+
+### Development Mode
+
+Run the application in development mode (starts Vite and Electron concurrently):
+
+```bash
+bun run dev
+```
+
 
 ## Usage
 

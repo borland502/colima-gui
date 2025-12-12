@@ -11,7 +11,7 @@ Colima GUI is a desktop application for managing Colima, a tool that provides co
 
 ### Prerequisites
 
-- [Bun](https://bun.sh/) v1.1 or later (installs Node-compatible dependencies and runs scripts)
+- [Bun](https://bun.sh/) v1.3 or later (installs Node-compatible dependencies and runs scripts)
 - macOS with Colima available on the `PATH`
 
 ### Steps

@@ -1,9 +1,10 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 name: Create Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
 
 jobs:
   build:
@@ -14,11 +15,32 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get version from package.json
+        id: version
+        run: |
+          VERSION=$(jq -r '.version' package.json)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=v$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Check if tag exists
+        id: tag_check
+        run: |
+          TAG="v${{ steps.version.outputs.version }}"
+          if git rev-parse "$TAG" >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "Tag $TAG already exists"
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Tag $TAG does not exist, will create release"
+          fi
 
       - name: Install Bun
         uses: oven-sh/setup-bun@v1
         with:
-          bun-version: 1.1.20
+          bun-version: 1.3.4
 
       - name: Install dependencies
         run: bun install
@@ -26,11 +48,14 @@ jobs:
       - name: Build application (Electron)
         run: bun run build
 
-      - name: Locate dmg artifact
-        id: dmg
+      - name: Locate artifacts
+        id: artifacts
         run: |
-          DMG_PATH=$(find release -name "*.dmg" -type f)
-          echo "path=$DMG_PATH" >> $GITHUB_OUTPUT
+          DMG_PATH=$(find release -name "*.dmg" -type f | head -1)
+          ZIP_PATH=$(find release -name "*-mac.zip" -type f | head -1)
+
+          echo "dmg_path=$DMG_PATH" >> $GITHUB_OUTPUT
+          echo "zip_path=$ZIP_PATH" >> $GITHUB_OUTPUT
 
           if [ -z "$DMG_PATH" ]; then
             echo "No DMG file found in release/"
@@ -39,14 +64,33 @@ jobs:
             echo "Found DMG at: $DMG_PATH"
           fi
 
+          if [ -z "$ZIP_PATH" ]; then
+            echo "No ZIP file found in release/"
+            exit 1
+          else
+            echo "Found ZIP at: $ZIP_PATH"
+          fi
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-build
+          path: |
+            ${{ steps.artifacts.outputs.dmg_path }}
+            ${{ steps.artifacts.outputs.zip_path }}
+          retention-days: 30
+
       - name: Create release
+        if: steps.tag_check.outputs.exists == 'false'
         uses: ncipollo/release-action@v1
         with:
-          artifacts: ${{ steps.dmg.outputs.path }}
-          tag: ${{ github.ref_name }}
-          name: Release ${{ github.ref_name }}
+          artifacts: |
+            ${{ steps.artifacts.outputs.dmg_path }}
+            ${{ steps.artifacts.outputs.zip_path }}
+          tag: ${{ steps.version.outputs.tag }}
+          name: Release ${{ steps.version.outputs.tag }}
           body: |
-            Release of version ${{ github.ref_name }}
+            Release of version ${{ steps.version.outputs.version }}
           draft: false
           prerelease: false
           token: ${{ secrets.GITHUB_TOKEN }}

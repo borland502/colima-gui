@@ -199,11 +199,11 @@ function App({ iconPath }: { iconPath?: string }) {
               </Box>
             )}
             <FormControl fullWidth>
-              <InputLabel id="context-select-label">Context</InputLabel>
+              <InputLabel id="context-select-label">Colima Profile</InputLabel>
               <Select
                 labelId="context-select-label"
                 value={selectedContext}
-                label="Context"
+                label="Colima Profile"
                 onChange={(event) => setSelectedContext(event.target.value)}
               >
                 {contexts.map((ctx) => (

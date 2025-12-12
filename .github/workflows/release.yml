@@ -90,7 +90,29 @@ jobs:
           tag: ${{ steps.version.outputs.tag }}
           name: Release ${{ steps.version.outputs.tag }}
           body: |
-            Release of version ${{ steps.version.outputs.version }}
+            ## Release ${{ steps.version.outputs.version }}
+
+            ### Installation (macOS)
+
+            Since this app is not code-signed, macOS Gatekeeper may report it as "damaged". To install:
+
+            **Option 1: Using Terminal (recommended)**
+            ```bash
+            # For the DMG:
+            xattr -cr "/Volumes/Colima GUI/Colima GUI.app"
+
+            # Or after extracting the ZIP:
+            xattr -cr "/Applications/Colima GUI.app"
+            ```
+
+            **Option 2: System Settings**
+            1. Try to open the app (it will be blocked)
+            2. Go to System Settings → Privacy & Security
+            3. Scroll down and click "Open Anyway" next to the Colima GUI message
+
+            ### Assets
+            - **DMG**: Mount and drag to Applications
+            - **ZIP**: Extract and move to Applications
           draft: false
           prerelease: false
           token: ${{ secrets.GITHUB_TOKEN }}

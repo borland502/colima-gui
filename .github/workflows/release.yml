@@ -48,36 +48,65 @@ jobs:
       - name: Build application (Electron)
         run: bun run build
 
-      - name: Locate artifacts
-        id: artifacts
+      - name: Install create-dmg
+        run: brew install create-dmg
+
+      - name: Create DMG with create-dmg
+        id: dmg
         run: |
-          DMG_PATH=$(find release -name "*.dmg" -type f | head -1)
-          ZIP_PATH=$(find release -name "*-mac.zip" -type f | head -1)
-
-          echo "dmg_path=$DMG_PATH" >> $GITHUB_OUTPUT
-          echo "zip_path=$ZIP_PATH" >> $GITHUB_OUTPUT
-
-          if [ -z "$DMG_PATH" ]; then
-            echo "No DMG file found in release/"
-            exit 1
+          APP_PATH="release/mac-arm64/Colima GUI.app"
+          DMG_NAME="Colima-GUI-${{ steps.version.outputs.version }}-arm64.dmg"
+          DMG_PATH="release/${DMG_NAME}"
+          
+          # Remove electron-builder generated DMG if exists
+          rm -f release/*.dmg release/*.blockmap
+          
+          # Create DMG using create-dmg
+          create-dmg \
+            --volname "Colima GUI" \
+            --volicon "resources/icons/512x512.png" \
+            --window-pos 200 120 \
+            --window-size 600 400 \
+            --icon-size 100 \
+            --icon "Colima GUI.app" 150 185 \
+            --hide-extension "Colima GUI.app" \
+            --app-drop-link 450 185 \
+            "${DMG_PATH}" \
+            "${APP_PATH}" || true
+          
+          # Verify DMG was created
+          if [ -f "${DMG_PATH}" ]; then
+            echo "DMG created successfully at ${DMG_PATH}"
+            echo "path=${DMG_PATH}" >> $GITHUB_OUTPUT
           else
-            echo "Found DMG at: $DMG_PATH"
+            echo "Failed to create DMG"
+            exit 1
           fi
 
-          if [ -z "$ZIP_PATH" ]; then
-            echo "No ZIP file found in release/"
-            exit 1
-          else
-            echo "Found ZIP at: $ZIP_PATH"
-          fi
+      - name: Create ZIP archive
+        id: zip
+        run: |
+          APP_PATH="release/mac-arm64/Colima GUI.app"
+          ZIP_NAME="Colima-GUI-${{ steps.version.outputs.version }}-arm64-mac.zip"
+          ZIP_PATH="release/${ZIP_NAME}"
+          
+          # Remove electron-builder generated ZIP if exists
+          rm -f release/*-mac.zip
+          
+          # Create ZIP
+          cd release/mac-arm64
+          zip -r -y "../${ZIP_NAME}" "Colima GUI.app"
+          cd ../..
+          
+          echo "path=${ZIP_PATH}" >> $GITHUB_OUTPUT
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: macos-build
           path: |
-            ${{ steps.artifacts.outputs.dmg_path }}
-            ${{ steps.artifacts.outputs.zip_path }}
+            ${{ steps.dmg.outputs.path }}
+            ${{ steps.zip.outputs.path }}
           retention-days: 30
 
       - name: Create release
@@ -85,8 +114,8 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: |
-            ${{ steps.artifacts.outputs.dmg_path }}
-            ${{ steps.artifacts.outputs.zip_path }}
+            ${{ steps.dmg.outputs.path }}
+            ${{ steps.zip.outputs.path }}
           tag: ${{ steps.version.outputs.tag }}
           name: Release ${{ steps.version.outputs.tag }}
           body: |

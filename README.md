@@ -9,12 +9,30 @@ Colima GUI is a desktop application for managing Colima, a tool that provides co
 
 ## Installation
 
-### Prerequisites
+### Download Release (Recommended)
+
+Download the latest DMG or ZIP from the [Releases](https://github.com/borland502/colima-gui/releases) page.
+
+> **Note:** Since this app is not code-signed, macOS Gatekeeper may report it as "damaged". To fix this, run one of the following commands in Terminal after installing:
+
+```bash
+# If installed from DMG (before copying to Applications):
+xattr -cr "/Volumes/Colima GUI/Colima GUI.app"
+
+# If already in Applications:
+xattr -cr "/Applications/Colima GUI.app"
+```
+
+Alternatively, go to **System Settings → Privacy & Security** and click **"Open Anyway"** after attempting to open the app.
+
+### Build from Source
+
+#### Prerequisites
 
 - [Bun](https://bun.sh/) v1.3 or later (installs Node-compatible dependencies and runs scripts)
 - macOS with Colima available on the `PATH`
 
-### Steps
+#### Steps
 
 1. Clone the repository:
 

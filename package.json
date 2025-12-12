@@ -58,7 +58,10 @@
     },
     "mac": {
       "category": "public.app-category.developer-tools",
-      "icon": "resources/icons/512x512.png"
+      "icon": "resources/icons/512x512.png",
+      "identity": null,
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false
     }
   },
   "productName": "Colima GUI"

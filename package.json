@@ -39,6 +39,7 @@
   },
   "build": {
     "appId": "com.borland502.colimagui",
+    "publish": null,
     "files": [
       "dist/**/*",
       "dist-electron/**/*",
